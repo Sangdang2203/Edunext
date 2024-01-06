@@ -1,20 +1,20 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
-namespace Edunext_API.Models
+namespace Edunext_Model.Models
 {
     public class OrderDetail
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int OrderDetailID { get; set; }
+        public int Id { get; set; }
         [Required]
         public int OrderID { get; set; }
         [Required]
         public int ProductID { get; set; }
         [Required]
-        [Range(1, 1000,ErrorMessage = "Quantity must be between 1 and 1000")]
+        [Range(1, 1000, ErrorMessage = "Quantity must be between 1 and 1000")]
         public int Quantity { get; set; }
         [Required]
         [Column(TypeName = "decimal(18,2)")]
