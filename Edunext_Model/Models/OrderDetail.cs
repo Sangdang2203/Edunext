@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -37,5 +38,13 @@ namespace Edunext_Model.Models
         public Order? Order { get; set; }
         [JsonIgnore]
         public Product? Product { get; set; }
+=======
+﻿namespace Edunext_Model.Models
+{
+    public class OrderDetail
+    {
+        public int Id { get; set; }
+        public Order? Order { get; set; }
+>>>>>>> ac65bf5eecdb2ce81e28635fcb992174033ade82
     }
 }

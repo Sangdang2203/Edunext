@@ -35,7 +35,11 @@ namespace Edunext_Model.Models
 
         public User User { get; set; } = null!;
 
+<<<<<<< HEAD
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+=======
+        public ICollection<OrderDetail> OrderDetails { get; } = new List<OrderDetail>();
+>>>>>>> ac65bf5eecdb2ce81e28635fcb992174033ade82
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
