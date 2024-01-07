@@ -14,7 +14,7 @@ namespace Edunext_API.Models
             modelBuilder.Entity<Order>(e =>
             {
                 e.HasOne(order => order.User).WithMany(user => user.Orders).HasForeignKey(order => order.UserId).IsRequired();
-                e.HasMany(order => order.OrderDetails).WithOne(orderDetail => orderDetail.Order).HasForeignKey(orderDetail => orderDetail.Id).IsRequired();
+                e.HasMany(order => order.OrderDetails).WithOne(orderDetail => orderDetail.Order).HasForeignKey(orderDetail => orderDetail.OrderId).IsRequired();
             });
         }
 
