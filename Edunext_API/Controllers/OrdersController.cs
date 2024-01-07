@@ -21,25 +21,22 @@ namespace Edunext_API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<Orders>>> GetOrders()
+        public async Task<ActionResult<Orders>> GetOrders()
         {
             Orders orders = await orderServices.GetOrders();
-            ApiResponse<Orders> res = new(orders, "Get orders successfully");
-
-            return Ok(res);
+          
+            return Ok(orders);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApiResponse<Order>>> GetOrderById(int id)
+        public async Task<ActionResult<Order>> GetOrderById(int id)
         {
             Order? order = await orderServices.GetOrderById(id);
-            ApiResponse<Order?> res = new(order, "Get order successfully");
             if (order == null)
             {
-                res.Message = $"Not found this order id: {id}";
-                return NotFound(res);
+                return NotFound();
             }
-            return Ok(res);
+            return Ok(order);
         }
 
         /*        [HttpPost]
@@ -68,13 +65,11 @@ namespace Edunext_API.Controllers
                 }*/
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApiResponse<Order>>> UpdateOrder(int id, Order order)
+        public async Task<ActionResult<Order>> UpdateOrder(int id, Order order)
         {
-            ApiResponse<Order> res = new(order, "Update order successfully!");
             if (order.Id != 0 && order.Id != id)
             {
-                res.Message = "Id param and order id is different!";
-                return BadRequest(res);
+                return BadRequest();
             }
 
             try
@@ -84,9 +79,7 @@ namespace Edunext_API.Controllers
 
                 /*databaseContext.Update(order);
                 await databaseContext.SaveChangesAsync();*/
-
-                res.Value = order;
-                return Ok(res);
+                return Ok(order);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -96,15 +89,13 @@ namespace Edunext_API.Controllers
         }
 
         [HttpPut("/status/{id}")]
-        public async Task<ActionResult<ApiResponse<Order>>> UpdateStatus(int id, string status)
+        public async Task<ActionResult<Order>> UpdateStatus(int id, string status)
         {
             Order order = await orderServices.GetOrderById(id);
-            ApiResponse<Order> res = new(order, "Update order successfully!");
 
             if (order == null)
             {
-                res.Message = $"Not found this order id: {id}";
-                return NotFound(res);
+                return NotFound();
             }
 
             try
@@ -114,7 +105,7 @@ namespace Edunext_API.Controllers
 
                 await orderServices.Save();
 
-                return Ok(res);
+                return Ok(order);
             }
             catch (DbUpdateConcurrencyException)
             {
