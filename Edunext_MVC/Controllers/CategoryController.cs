@@ -55,20 +55,13 @@ namespace Edunext_MVC.Controllers
         [HttpGet("categories/edit/{id}")]
         public IActionResult Edit(int id)
         {
-            try
-            {
-                var category = JsonConvert.DeserializeObject<IEnumerable<Category>>
+            var category = JsonConvert.DeserializeObject<Category>
                     (client.GetStringAsync(cateUrl + id).Result);
-                if(category != null)
-                {
-                    return View(category);
-                }
-            }
-            catch (Exception ex)
+            if (category != null)
             {
-                ModelState.AddModelError("Error get edit form: ", ex.Message);
+                return View(category);
             }
-            return View();
+            return NotFound();
         }
 
         [HttpPost("categories/edit/{id}")]
@@ -76,7 +69,7 @@ namespace Edunext_MVC.Controllers
         {
             try
             {
-                var editResponese = client.PutAsJsonAsync(cateUrl, category).Result;
+                var editResponese = client.PutAsJsonAsync(cateUrl + category.Id, category).Result;
                 if (editResponese.IsSuccessStatusCode)
                 {
                     TempData["success"] = "Update category successfully.";
@@ -85,7 +78,7 @@ namespace Edunext_MVC.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Error get edit form: ", ex.Message);
+                ModelState.AddModelError("Error failed to update: ", ex.Message);
             }
             return View();
         }

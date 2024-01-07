@@ -9,9 +9,9 @@
 <hr />
 <div class="row">
     <div class="col-lg-12 col-md-12 w-75 mx-auto">
-        <form asp-action="Create" method="post" asp-controller="Category" enctype="multipart/form-data">
+        <form asp-action="Create" method="post" asp-controller="Category">
             <div class="form-group">
-                <label class="control-label">Product Name</label>
+                <label class="control-label">Category Name</label>
                 <input asp-for="Name" class="form-control" placeholder="Enter name ..." />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>

@@ -65,10 +65,7 @@ namespace Edunext_API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<Category>> Edit(int id, Category category)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
+
             try
             {
                 var existedCategory = await databaseContext.Categories.FindAsync(id);
@@ -79,7 +76,7 @@ namespace Edunext_API.Controllers
                     {
                         ModelState.AddModelError("Code", "This category already exists!");
                     }
-                    databaseContext.Categories.Update(category);
+                    databaseContext.Entry(existedCategory).CurrentValues.SetValues(category);
                     await databaseContext.SaveChangesAsync();
                     return Ok();
                 }
