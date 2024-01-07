@@ -1,3 +1,5 @@
+using Edunext_MVC.Models;
+
 namespace Edunext_MVC
 {
     public class Program
@@ -8,6 +10,8 @@ namespace Edunext_MVC
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.Configure<Client>(builder.Configuration.GetSection("Client"));
 
             var app = builder.Build();
 
