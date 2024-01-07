@@ -1,5 +1,4 @@
 ﻿using Edunext_API.Helpers;
-using Edunext_API.Models;
 using Edunext_API.Services;
 using Edunext_Model.Models;
 using Microsoft.AspNetCore.Http;
