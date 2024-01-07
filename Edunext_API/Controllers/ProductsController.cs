@@ -1,5 +1,6 @@
 ﻿using Edunext_API.Helpers;
 using Edunext_API.Models;
+using Edunext_Model.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,19 +32,36 @@ namespace Edunext_API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Product>> Create ([FromForm] Product product, IFormFile file)
+        public async Task<ActionResult<Product>> Create([FromForm] Product product, IFormFile file)
         {
             try
             {
+                var existedCode = await databaseContext.Products.AnyAsync(p => p.Code == product.Code);
+                var existedName = await databaseContext.Products.AnyAsync(p => p.Name == product.Name);
+
+                if (existedCode)
+                {
+                    ModelState.AddModelError("Code", "This code already exists!");
+                    return BadRequest(ModelState);
+                }
+
+                if (existedName)
+                {
+                    ModelState.AddModelError("Name", "This product already exists!");
+                    return BadRequest(ModelState);
+                }
+
                 product.Image = UploadFiles.SaveFile("ProductImage", file);
+
                 await databaseContext.Products.AddAsync(product);
                 await databaseContext.SaveChangesAsync();
+
                 return CreatedAtAction("GetProduct", new { id = product.Id }, product);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Error: ", ex.Message);
-                return BadRequest();
+                ModelState.AddModelError("Error", ex.Message);
+                return BadRequest(ModelState);
             }
         }
 

@@ -19,7 +19,7 @@ namespace Edunext_API
 
             builder.Services.AddDbContext<DatabaseContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString(""));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("connectDB"));
             });
 
             var app = builder.Build();
