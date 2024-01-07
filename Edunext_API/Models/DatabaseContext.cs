@@ -9,16 +9,11 @@ namespace Edunext_API.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Order>(e =>
-            {
-                e.HasOne(order => order.User).WithMany(user => user.Orders).HasForeignKey(order => order.UserId).IsRequired();
-                e.HasMany(order => order.OrderDetails).WithOne(orderDetail => orderDetail.Order).HasForeignKey(orderDetail => orderDetail.Id).IsRequired();
-            });
+            modelBuilder.Entity<Product>().HasOne<Category>(cat => cat.Categories)
+                 .WithMany(p => p.Products)
+                 .HasForeignKey(p => p.CategoryId);
         }
 
-        public DbSet<Order> Orders { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
     }

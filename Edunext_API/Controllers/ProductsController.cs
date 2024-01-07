@@ -25,7 +25,7 @@ namespace Edunext_API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<Product> GetProduct (int id)
+        public async Task<ActionResult<Product>> GetProduct (int id)
         {
             var product = await databaseContext.Products.FirstOrDefaultAsync(x => x.Id == id);
             return product;

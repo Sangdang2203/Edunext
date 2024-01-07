@@ -1,0 +1,118 @@
+﻿
+@using Edunext_Model.Models;
+@model IEnumerable<Product>;
+
+<div class="d-flex justify-content-between align-items-center my-4">
+    <h2>Product Management</h2>
+    <a asp-action="Create" class="btn btn-light">+ Add New</a>
+</div>
+
+<form class="d-flex">
+    <input type="hidden" name="sort" value="@ViewBag.Sort" />
+    <input name="search" class="form-control w-25" placeholder="Enter your search..." value="@ViewBag.Search" />
+    <button class="btn btn-outline-success ms-2">Search</button>
+</form>
+<br />
+
+@if (TempData["success"] != null)
+{
+    <div class="alert alert-success my-2">
+        @TempData["success"]
+    </div>
+}
+
+@if (TempData["error"] != null)
+{
+    <div class="alert alert-danger my-2">
+        @TempData["error"]
+    </div>
+}
+
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+
+            <th scope="col">
+                <a asp-action="Index"
+                   asp-route-sort="@ViewBag.ProductName"
+                   asp-route-search="@ViewBag.Search"
+                   class="text-decoration-none text-dark">
+                    <span>Name</span>
+                    <i class="@ViewBag.Icon"></i>
+                </a>
+            </th>
+
+            <th scope="col">Image</th>
+
+            <th scope="col">Category</th>
+
+            <th scope="col">
+                <a asp-action="Index"
+                   asp-route-sort="@ViewBag.Price"
+                   asp-route-search="@ViewBag.Search"
+                   class="text-decoration-none text-dark">
+                    <span>Price</span>
+                    <i class="@ViewBag.Icon"></i>
+                </a>
+            </th>
+
+            <th scope="col">
+                <a asp-action="Index"
+                   asp-route-sort="@ViewBag.Quantity"
+                   asp-route-search="@ViewBag.Search"
+                   class="text-decoration-none text-dark">
+                    <span>Quantity</span>
+                    <i class="@ViewBag.Icon"></i>
+                </a>
+            </th>
+
+            <th scope="col">Description</th>
+
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Code</td>
+                    <td class="text-uppercase">@item.Name</td>
+                    <td>@item.Categories.Name</td>
+
+                    <td>
+                        <img src="@item.Image" alt="@item.Name" width="100" class="img-thumbnail" />
+                    </td>
+
+                    <td>$ @item.Price</td>
+                    <td>@(item.Quantity == 0 ? "Out of stock" : item.Quantity)
+                    </td>
+                    <td>@item.Description</td>
+
+                    <td>
+                        <a asp-action="Remove" asp-route-id="@item.Id">
+                            <i class="bi bi-trash"></i>
+                        </a>
+
+                        <a
+                           data-bs-toggle="modal"
+                           data-bs-target="@("#Modal" + item.Id)">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        @(await Html.PartialAsync("Details", item))
+
+                        <a class="btn btn-outline-success" asp-action="Edit" asp-route-id="@item.Id">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+    @if (Model?.Count() == 0)
+    {
+        <tr class="alert alert-danger text-center"><td colspan="8">No data !!!</td></tr>
+    }
+</table>
