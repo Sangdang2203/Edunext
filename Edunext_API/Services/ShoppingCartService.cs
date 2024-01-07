@@ -26,7 +26,7 @@ namespace Edunext_API.Services
 
             foreach (OrderDetail orderdetail in orderDetails)
             {
-                orderdetail.OrderId = order.Id;
+                orderdetail.Id = order.Id;
                 await uow.OrderDetailRepository.InsertEntity(orderdetail);
             }
             await uow.Save();
