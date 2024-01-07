@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace Edunext_Model.Models
 {
@@ -35,5 +36,8 @@ namespace Edunext_Model.Models
 
         public int CategoryId { get; set; }
         public Category? Categories { get; set; }
+        [JsonIgnore]
+        public ICollection<OrderDetail>? OrderDetails { get; set; }
+
     }
 }
