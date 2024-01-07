@@ -1,8 +1,9 @@
 ﻿using Edunext_API.Helpers;
 using Edunext_Model.Models;
-using Edunext_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Edunext_Model.DTOs;
+using Edunext_API.Services;
 
 namespace Edunext_API.Controllers
 {
@@ -12,27 +13,27 @@ namespace Edunext_API.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private readonly DatabaseContext databaseContext;
+        private readonly OrderService orderServices;
 
-        public OrdersController(DatabaseContext databaseContext)
+        public OrdersController(OrderService orderServices)
         {
-            this.databaseContext = databaseContext;
+            this.orderServices = orderServices;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<Orders>>> GetOrders()
         {
-            Orders orders = await databaseContext.Orders.ToListAsync();
+            Orders orders = await orderServices.GetOrders();
             ApiResponse<Orders> res = new(orders, "Get orders successfully");
 
             return Ok(res);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApiResponse<Order>>> GetOrder(string id)
+        public async Task<ActionResult<ApiResponse<Order>>> GetOrderById(int id)
         {
-            Order order = await databaseContext.Orders.FindAsync(id);
-            ApiResponse<Order> res = new(order, "Get order successfully");
+            Order? order = await orderServices.GetOrderById(id);
+            ApiResponse<Order?> res = new(order, "Get order successfully");
             if (order == null)
             {
                 res.Message = $"Not found this order id: {id}";
@@ -41,36 +42,36 @@ namespace Edunext_API.Controllers
             return Ok(res);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ApiResponse<Order>>> CreateOrder(Order order)
-        {
-            ApiResponse<Order> res = new(order, "Create order successfully");
-            if (order.Id != "")
-            {
-                res.Message = "Cannot create this order because id is auto generared!";
-                return BadRequest(res);
-            }
-            try
-            {
-                order.Id = Guid.NewGuid().ToString();
-                order.OrderDate = DateTime.Now;
-                order.DateUpdate = DateTime.Now;
+        /*        [HttpPost]
+                public async Task<ActionResult<ApiResponse<Order>>> CreateOrder(Order order)
+                {
+                    ApiResponse<Order> res = new(order, "Create order successfully");
+                    if (order.Id != "")
+                    {
+                        res.Message = "Cannot create this order because id is auto generared!";
+                        return BadRequest(res);
+                    }
+                    try
+                    {
+                        order.Id = Guid.NewGuid().ToString();
+                        order.OrderDate = DateTime.Now;
+                        order.DateUpdate = DateTime.Now;
 
-                await databaseContext.Orders.AddAsync(order);
-                await databaseContext.SaveChangesAsync();
-                return CreatedAtAction("GetOrder", new { id = order.Id }, res);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+                        await databaseContext.Orders.AddAsync(order);
+                        await databaseContext.SaveChangesAsync();
+                        return CreatedAtAction("GetOrder", new { id = order.Id }, res);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+                }*/
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApiResponse<Order>>> UpdateOrder(string id, Order order)
+        public async Task<ActionResult<ApiResponse<Order>>> UpdateOrder(int id, Order order)
         {
             ApiResponse<Order> res = new(order, "Update order successfully!");
-            if (order.Id != "" && order.Id != id)
+            if (order.Id != 0 && order.Id != id)
             {
                 res.Message = "Id param and order id is different!";
                 return BadRequest(res);
@@ -81,8 +82,8 @@ namespace Edunext_API.Controllers
                 order.Id = id;
                 order.DateUpdate = DateTime.Now;
 
-                databaseContext.Update(order);
-                await databaseContext.SaveChangesAsync();
+                /*databaseContext.Update(order);
+                await databaseContext.SaveChangesAsync();*/
 
                 res.Value = order;
                 return Ok(res);
@@ -95,9 +96,9 @@ namespace Edunext_API.Controllers
         }
 
         [HttpPut("/status/{id}")]
-        public async Task<ActionResult<ApiResponse<Order>>> UpdateStatus(string id, string status)
+        public async Task<ActionResult<ApiResponse<Order>>> UpdateStatus(int id, string status)
         {
-            Order order = await databaseContext.Orders.FindAsync(id);
+            Order order = await orderServices.GetOrderById(id);
             ApiResponse<Order> res = new(order, "Update order successfully!");
 
             if (order == null)
@@ -111,7 +112,7 @@ namespace Edunext_API.Controllers
                 order.Status = status;
                 order.DateUpdate = DateTime.Now;
 
-                await databaseContext.SaveChangesAsync();
+                await orderServices.Save();
 
                 return Ok(res);
             }
@@ -120,11 +121,6 @@ namespace Edunext_API.Controllers
 
                 return BadRequest();
             }
-        }
-
-        private bool IsExisted(string id)
-        {
-            return databaseContext.Orders.Any(o => o.Id == id);
         }
     }
 }
