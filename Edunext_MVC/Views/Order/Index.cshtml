@@ -1,0 +1,182 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@using X.PagedList;
+@using Edunext_Model.Models;
+
+@model IPagedList<Order>
+
+@{
+    ViewData["Title"] = "Order List";
+    switch (ViewBag.Sort_type)
+    {
+        case "asc":
+            ViewBag.Icon = "bi bi-caret-down-fill";
+            ViewBag.Route = "desc";
+            break;
+        case "desc":
+            ViewBag.Icon = "bi bi-caret-up-fill";
+            ViewBag.Route = "";
+            break;
+        default:
+            ViewBag.Icon = "";
+            ViewBag.Route = "asc";
+            break;
+    }
+
+    string GetSortType(string collumn)
+    {
+        return collumn == ViewBag.Collumn ? ViewBag.Route : "asc";
+    }
+
+    bool DisplayIcon(string collumn)
+    {
+        return collumn == ViewBag.Collumn;
+    }
+
+    object message_content = "";
+    if (TempData.TryGetValue("message_content", out message_content))
+    {
+        <div class="@("alert alert-" + TempData["message_type"]?.ToString())" role="alert">
+            @message_content.ToString()
+        </div>
+    }
+
+}
+
+@if (Model != null)
+{
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h2>Product List</h2>
+        <form class="d-flex">
+            <input type="hidden" name="sort_type" value="@ViewBag.Sort_type" />
+            <input type="hidden" name="collumn" value="@ViewBag.Collumn" />
+            <input name="userid_search" class="form-control w-100" placeholder="Enter name..." value="@ViewBag.Search" />
+            <button class="btn btn-primary ms-2">Search</button>
+        </form>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">User Id</th>
+                <th scope="col">
+                    <a asp-route-sort_type="@GetSortType("status")"
+                       asp-route-collumn="status"
+                       asp-route-userid_search="@ViewBag.Search"
+                       class="text-decoration-none text-black">
+                        <span>Status</span>
+                        @if (DisplayIcon("status"))
+                        {
+                            <i class="@ViewBag.Icon"></i>
+                        }
+                    </a>
+                </th>
+                <th scope="col">
+                    <a asp-route-sort_type="@GetSortType("order_date")"
+                       asp-route-collumn="order_date"
+                       asp-route-userid_search="@ViewBag.Search"
+                       class="text-decoration-none text-black">
+                        <span>Order Date</span>
+                        @if (DisplayIcon("order_date"))
+                        {
+                            <i class="@ViewBag.Icon"></i>
+                        }
+                    </a>
+                </th>
+                <th scope="col">
+                    <a asp-route-sort_type="@GetSortType("required_date")"
+                       asp-route-collumn="required_date"
+                       asp-route-userid_search="@ViewBag.Search"
+                       class="text-decoration-none text-black">
+                        <span>Required Date</span>
+                        @if (DisplayIcon("required_date"))
+                        {
+                            <i class="@ViewBag.Icon"></i>
+                        }
+                    </a>
+                </th>
+                <th>City</th>
+                <th>Distrtict</th>
+                <th>Ward</th>
+                <th>Comment</th>
+                <th scope="col">
+                    <a asp-route-sort_type="@GetSortType("shipped_date")"
+                       asp-route-collumn="shipped_date"
+                       asp-route-userid_search="@ViewBag.Search"
+                       class="text-decoration-none text-black">
+                        <span>Shipped Date</span>
+                        @if (DisplayIcon("shipped_date"))
+                        {
+                            <i class="@ViewBag.Icon"></i>
+                        }
+                    </a>
+                </th>
+                <th scope="col">
+                    <a asp-route-sort_type="@GetSortType("date_update")"
+                       asp-route-collumn="date_update"
+                       asp-route-userid_search="@ViewBag.Search"
+                       class="text-decoration-none text-black">
+                        <span>Date Updated</span>
+                        @if (DisplayIcon("date_update"))
+                        {
+                            <i class="@ViewBag.Icon"></i>
+                        }
+                    </a>
+                </th>
+                <th scope="col">Handle</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Order item in Model)
+            {
+                <tr>
+                    <th scope="row">@item.Id</th>
+                    <td>@item.UserId</td>
+                    <td>@item.Status</td>
+                    <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.RequiredDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@item.ShipCity</td>
+                    <td>@item.ShipDitrict</td>
+                    <td>@item.ShipWard</td>
+                    <td>@item.Comment</td>
+                    <td>@item.ShippedDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@item.DateUpdate.ToString("dd/MM/yyyy")</td>
+
+                    <td>
+                        <button type="button"
+                                class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="@("#Modal" + item.Id)">
+                            Detail
+                        </button>
+                        @(await Html.PartialAsync("_ModalProduct", item))
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@Html.PagedListPager(
+            (IPagedList)Model,
+            page_number => Url.Action(
+                "Index",
+                "Product",
+                new
+                {
+                    page_number = page_number,
+                    userid_search = ViewBag.Search,
+                    sort_type = ViewBag.Sort_type,
+                    collumn = ViewBag.Collumn
+                }),
+            new PagedListRenderOptions
+        {
+            MaximumPageNumbersToDisplay = 3,
+            UlElementClasses = new string[] { "pagination", "justify-content-center" },
+            PageClasses = new string[] { "page-link" },
+            LiElementClasses = new string[] { "page-item" },
+            Display = PagedListDisplayMode.IfNeeded,
+            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        }
+    )
