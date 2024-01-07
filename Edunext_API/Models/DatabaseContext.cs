@@ -20,7 +20,7 @@ namespace Edunext_API.Models
                  .HasOne(od => od.Product)
                  .WithMany(p => p.OrderDetails)
                  .HasForeignKey(od => od.ProductID);
-
+            modelBuilder.Entity<Product>().HasMany<OrderDetail>(od => od.OrderDetails)
             modelBuilder.Entity<Product>().HasOne<Category>(cat => cat.Categories)
                 .WithMany(p => p.Products)
                 .HasForeignKey(p => p.CategoryId);
@@ -36,5 +36,6 @@ namespace Edunext_API.Models
         public DbSet<Order> Orders { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
     }
 }
