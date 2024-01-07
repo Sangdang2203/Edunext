@@ -1,5 +1,9 @@
-
 using Edunext_API.Models;
+using Edunext_API.Repositories.GenericRepository;
+using Edunext_API.Repositories.OrderDetailRepository;
+using Edunext_API.Repositories.OrderRepository;
+using Edunext_API.Repositories.UnitOfWork;
+using Edunext_API.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Edunext_API
@@ -22,6 +26,28 @@ namespace Edunext_API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("connectDB"));
             });
 
+            // Repository
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IShoppingCartUnitOfWork, ShoppingCartUnitOfWork>();
+
+            builder.Services.AddScoped<OrderDetailRepository>();
+
+            // Service
+            builder.Services.AddScoped<OrderService>();
+            builder.Services.AddScoped<ShoppingCartService>();
+
+            builder.Services.AddScoped<OrderDetailService>();
+            
+            builder.Services.AddDistributedMemoryCache();
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -33,6 +59,7 @@ namespace Edunext_API
 
             app.UseAuthorization();
 
+            app.UseSession();
 
             app.MapControllers();
 
