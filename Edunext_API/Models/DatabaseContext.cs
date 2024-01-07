@@ -20,8 +20,8 @@ namespace Edunext_API.Models
                  .HasOne(od => od.Product)
                  .WithMany(p => p.OrderDetails)
                  .HasForeignKey(od => od.ProductID);
-            modelBuilder.Entity<Product>().HasMany<OrderDetail>(od => od.OrderDetails)
-            modelBuilder.Entity<Product>().HasOne<Category>(cat => cat.Categories)
+            modelBuilder.Entity<Product>().HasMany(od => od.OrderDetails);
+            modelBuilder.Entity<Product>().HasOne(cat => cat.Categories)
                 .WithMany(p => p.Products)
                 .HasForeignKey(p => p.CategoryId);
             modelBuilder.Entity<Category>().HasMany<Product>(p => p.Products)
