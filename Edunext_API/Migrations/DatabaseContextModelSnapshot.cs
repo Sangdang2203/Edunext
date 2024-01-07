@@ -116,7 +116,7 @@ namespace Edunext_API.Migrations
 
                     b.HasIndex("ProductID");
 
-                    b.ToTable("OrderDetail");
+                    b.ToTable("OrderDetails");
                 });
 
             modelBuilder.Entity("Edunext_Model.Models.Product", b =>
@@ -216,13 +216,13 @@ namespace Edunext_API.Migrations
 
             modelBuilder.Entity("Edunext_Model.Models.Product", b =>
                 {
-                    b.HasOne("Edunext_Model.Models.Category", "Categories")
+                    b.HasOne("Edunext_Model.Models.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Categories");
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Edunext_Model.Models.Category", b =>
