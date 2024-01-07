@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Edunext_Model.DTOs.Cart.OrderDetailDTO>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="text-black text-center">Order Detail</h1>
+<h3 class="text-black text-center">Hello! @(ViewBag.User ?? null)</h3>
+
+<table class="table align-middle mb-0 bg-white">
+    <thead class="bg-light">
+        <tr>
+            <th>Id</th>
+            <th>Product</th>
+            <th>Status</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Discount</th>
+            <th>SubTotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <p class="fw-normal mb-1">@item.Id</p>
+                    <p class="text-muted mb-0">OrderID: @item.OrderID</p>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img src="https://mdbootstrap.com/img/new/avatars/8.jpg"
+                             alt=""
+                             style="width: 45px; height: 45px"
+                             class="rounded-circle" />
+                        <div class="ms-3">
+                            <p class="fw-bold mb-1">@item.ProductName</p>
+                            <p class="text-muted mb-0">ProductID: @item.ProductID</p>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge rounded-pill badge-primary text-black text-capitalize">@item.Status</span>
+                    <p class="text-muted mb-0 text-light">@item.CreatedDate</p>
+                </td>
+                <td>
+                    <span class="fw-normal mb-1">@item.Quantity</span>
+                </td>
+                <td>@item.UnitPrice $</td>
+                <td>@item.Discount</td>
+                <td>
+                    <span class="fw-normal mb-1">@item.LineTotal $</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
