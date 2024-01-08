@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Edunext_Model.DTOs.Cart;
+using Edunext_Model.DTOs.Product;
 using Edunext_Model.Models;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,11 @@ namespace Edunext_Model.Mapper
         {
             CreateMap<Order, CartOrderDTO>().ReverseMap();
             CreateMap<OrderDetail, CartOrderDetailDTO>().ReverseMap();
+            CreateMap<Product, ProductPost>().ReverseMap();
+            CreateMap<Product, ProductGet>().ReverseMap();
+            CreateMap<Product, ProductPut>().ReverseMap();
+            CreateMap<Category, CategoryGet>().ReverseMap();
+
             // Additional mappings here...
         }
     }

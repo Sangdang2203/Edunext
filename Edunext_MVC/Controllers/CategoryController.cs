@@ -9,19 +9,14 @@ namespace Edunext_MVC.Controllers
         private readonly string cateUrl = "http://localhost:5101/api/Categories/";
         private readonly HttpClient client = new HttpClient();
         [HttpGet("categories")]
-        public IActionResult Index()
+        public IActionResult Index(string search = "")
         {
-            try
-            {
-                var category = JsonConvert.DeserializeObject<IEnumerable<Category>>
+            var categories = JsonConvert.DeserializeObject<IEnumerable<Category>>
                      (client.GetStringAsync(cateUrl).Result);
-                return View(category);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("Error get categories: ", ex.Message);
-            }
-            return View();
+
+                categories = categories.Where(cat => cat.Name.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                ViewBag.Search = search;
+                return View(categories);
         }
 
         [HttpGet("categories/add")]

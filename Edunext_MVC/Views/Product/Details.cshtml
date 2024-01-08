@@ -1,6 +1,6 @@
 ﻿
-@using Edunext_Model.Models;
-@model Product;
+@using Edunext_Model.DTOs.Product;
+@model ProductGet;
 
 <!-- Modal -->
 <div class="modal fade" id="@("Modal" + @Model.Id)" tabindex="-1" aria-hidden="true">
@@ -15,15 +15,17 @@
             <div class="modal-body">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <img src="/@Model.Image" class="img-thumbnail" width="150" />
+                        <img src="@Model.ImageUrl" alt="@Model.Name" width="200" class="img-thumbnail" />
                     </div>
                     <div>
                         <p>Code: <b class="text-uppercase">@Model.Code</b></p>
                         <p>Name: @Model.Name</p>
                         <p>Price: $ @Model.Price</p>
-                        <p>Descriptions: @Model.Description</p>
                     </div>
-                </div>             
+
+                </div>
+
+                <p>Descriptions: @Model.Description</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

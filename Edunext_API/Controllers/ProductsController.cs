@@ -1,5 +1,7 @@
 ﻿using Edunext_API.Helpers;
 using Edunext_API.Models;
+using Edunext_Model.DTOs.Product;
+using Edunext_Model.Mapper;
 using Edunext_Model.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,50 +20,56 @@ namespace Edunext_API.Controllers
             databaseContext = _databaseContext;
         }
         [HttpGet]
-        public async Task<IEnumerable<Product>> GetProducts()
+        public async Task<IEnumerable<ProductGet>> GetProducts()
         {
-            var products = await databaseContext.Products.ToListAsync();
-            return products;
+            var products = await databaseContext.Products.Include(product => product.Category).ToListAsync();
+            var poductGets = Mapping.Mapper.Map<List<ProductGet>>(products);
+
+            return poductGets;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct (int id)
+
+        [HttpGet("edit/{id}")]
+        public async Task<ActionResult<ProductPost>> GetProductPost(int id)
         {
-            var product = await databaseContext.Products.FirstOrDefaultAsync(x => x.Id == id);
-            return product;
+            var product = await databaseContext.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            var productPost = Mapping.Mapper.Map<ProductPost>(product);
+
+            return productPost;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Product>> Create([FromForm] Product product, IFormFile file)
+        public async Task<ActionResult<ProductPost>> Create([FromForm] ProductPost productPost)
         {
             try
             {
-                var existedCode = await databaseContext.Products.AnyAsync(p => p.Code == product.Code);
-                var existedName = await databaseContext.Products.AnyAsync(p => p.Name == product.Name);
 
-                if (existedCode)
+                var existedCode = await databaseContext.Products.AnyAsync(p => p.Code == productPost.Code);
+                var existedName = await databaseContext.Products.AnyAsync(p => p.Name == productPost.Name);
+
+                if (!existedCode && !existedName)
                 {
-                    ModelState.AddModelError("Code", "This code already exists!");
-                    return BadRequest(ModelState);
+                    Product product = Mapping.Mapper.Map<Product>(productPost);
+
+                    product.ImageUrl = UploadFiles.SaveFile("ProductImage", productPost.Image);
+
+                    await databaseContext.Products.AddAsync(product);
+                    await databaseContext.SaveChangesAsync();
+
+                    return CreatedAtAction("GetProductPost", new { id = product.Id }, product);
                 }
 
-                if (existedName)
-                {
-                    ModelState.AddModelError("Name", "This product already exists!");
-                    return BadRequest(ModelState);
-                }
-
-                product.Image = UploadFiles.SaveFile("ProductImage", file);
-
-                await databaseContext.Products.AddAsync(product);
-                await databaseContext.SaveChangesAsync();
-
-                return CreatedAtAction("GetProduct", new { id = product.Id }, product);
+                return BadRequest();
+                
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Error", ex.Message);
-                return BadRequest(ModelState);
+                Console.WriteLine(ex.InnerException);
+                return BadRequest();
             }
         }
 
@@ -72,9 +80,9 @@ namespace Edunext_API.Controllers
             var product = await databaseContext.Products.FindAsync(id);
             if (product != null)
             {
-                if (product.Image != null)
+                if (product.ImageUrl != null)
                 {
-                    UploadFiles.DeleteFile(product.Image);
+                    UploadFiles.DeleteFile(product.ImageUrl);
                 }
                 databaseContext.Products.Remove(product);
                 await databaseContext.SaveChangesAsync();
@@ -83,41 +91,38 @@ namespace Edunext_API.Controllers
             return NotFound();
         }
 
-        [HttpPut]
-        public async Task<ActionResult<Product>> Update([FromForm] Product product, IFormFile? file)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ProductPut>> Update([FromForm] ProductPut product, int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            var updatedProduct = await databaseContext.Products.FindAsync(product.Id);
-            if(updatedProduct != null)
+            var existedProduct = await databaseContext.Products.FindAsync(id);
+            if(existedProduct != null)
             {
                 try
                 {
-                    if(file != null)
+                    if (existedProduct.Image != null)
                     {
-                        if(updatedProduct.Image != null)
+                        if (existedProduct.Image != null)
                         {
-                            UploadFiles.DeleteFile(updatedProduct.Image);
+                            UploadFiles.DeleteFile(existedProduct.ImageUrl);
                         }
-                        product.Image = UploadFiles.SaveFile("ProductImage", file);
+                        product.ImageUrl = UploadFiles.SaveFile("ProductImage", product.Image);
                     }
-                    updatedProduct.Code = product.Code;
-                    updatedProduct.Name = product.Name;
-                    updatedProduct.Price = product.Price;
-                    updatedProduct.Quantity = product.Quantity;
-                    updatedProduct.Description = product.Description;
-                    databaseContext.Products.Update(updatedProduct);
+                    existedProduct.Code = product.Code;
+                    existedProduct.Name = product.Name;
+                    existedProduct.Price = (decimal)product.Price;
+                    existedProduct.Quantity = (int)product.Quantity;
+                    existedProduct.Description = product.Description;
+
+                    databaseContext.Entry(existedProduct).CurrentValues.SetValues(product);
                     await databaseContext.SaveChangesAsync();
                     return Ok();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
-                    throw;
+                    ModelState.AddModelError("Error", ex.Message);
+                    return BadRequest(ModelState);
                 }
-            }
+            }          
             return NotFound();
         }
 

@@ -90,18 +90,5 @@ namespace Edunext_API.Controllers
             }
         }
 
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Category>> Delete(int id)
-        {
-            var category = await databaseContext.Categories.FindAsync(id);
-            if (category != null)
-            {
-                databaseContext.Categories.Remove(category);
-                await databaseContext.SaveChangesAsync();
-                return Ok();
-            }
-            return NotFound();
-        }
     }
 }
