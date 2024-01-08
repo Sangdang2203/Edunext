@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using SelectPdf;
 using System.Net.Http.Headers;
 
 namespace Edunext_MVC.Controllers
@@ -99,16 +98,16 @@ namespace Edunext_MVC.Controllers
             var orderDetails = JsonConvert.DeserializeObject<List<OrderDetailDTO>>(result);
             return orderDetails;
         }
-        public async Task<IActionResult> HtmlToPdfConverter()
+        /*public async Task<IActionResult> HtmlToPdfConverter()
         {
             string currentUrl = Request.GetEncodedUrl();
             SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
             SelectPdf.PdfDocument doc = converter.ConvertUrl(currentUrl);
-            /*doc.Save("test.pdf");
+            *//*doc.Save("test.pdf");
             doc.Close();
-            return RedirectToAction("Index");*/
+            return RedirectToAction("Index");*//*
             byte[] pdfData = await converter.ConvertAsync(currentUrl);
             return File(pdfData, "application/pdf", "test.pdf");
-        }
+        }*/
     }
 }
