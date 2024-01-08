@@ -19,6 +19,13 @@ namespace Edunext_MVC
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("connectDB"));
             });
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder => builder.AllowAnyOrigin()
+                                      .AllowAnyMethod()
+                                      .AllowAnyHeader());
+            });
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(30);
@@ -42,6 +49,8 @@ namespace Edunext_MVC
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
+
+            app.UseCors("AllowAllOrigins");
 
             app.UseRouting();
 

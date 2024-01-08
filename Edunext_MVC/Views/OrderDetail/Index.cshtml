@@ -1,27 +1,28 @@
-﻿@model IEnumerable<Edunext_Model.DTOs.Cart.OrderDetailDTO>
+﻿
+@model IEnumerable<Edunext_Model.DTOs.Cart.OrderDetailDTO>
 
 @{
-    ViewData["Title"] = "Index";
+  ViewData["Title"] = "Index";
 }
 
 <h1 class="text-black text-center">Order Detail</h1>
 <h3 class="text-black text-center">Hello! @(ViewBag.User ?? null)</h3>
 
-<table class="table align-middle mb-0 bg-white">
-    <thead class="bg-light">
-        <tr>
-            <th>Id</th>
-            <th>Product</th>
-            <th>Status</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Discount</th>
-            <th>SubTotal</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<table id="orderDetailsTable" class="table align-middle mb-0 bg-white">
+  <thead class="bg-light">
+    <tr>
+      <th>Id</th>
+      <th>Product</th>
+      <th>Status</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Discount</th>
+      <th>SubTotal</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in Model)
+    {
             <tr>
                 <td>
                     <p class="fw-normal mb-1">@item.Id</p>
@@ -52,6 +53,24 @@
                     <span class="fw-normal mb-1">@item.LineTotal $</span>
                 </td>
             </tr>
-        }
-    </tbody>
+    }
+  </tbody>
 </table>
+@section Scripts {
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
+  <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      $('#orderDetailsTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false
+      });
+    });
+  </script>
+}

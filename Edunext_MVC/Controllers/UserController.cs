@@ -143,6 +143,7 @@ namespace Edunext_MVC.Controllers
                     {
                         // Replace the username in the response with the username from the database
                         HttpContext.Session.SetString("UserName", dbUser.Username);
+                        HttpContext.Session.SetInt32("UserId", dbUser.Id);
 
                         // Create an identity and sign in the user
                         var claims = new List<Claim>

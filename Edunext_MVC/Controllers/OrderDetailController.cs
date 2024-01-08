@@ -1,21 +1,24 @@
 ﻿using Edunext_Model.DTOs.Cart;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using SelectPdf;
+using System.Net.Http.Headers;
 
 namespace Edunext_MVC.Controllers
 {
     [Authorize]
     public class OrderDetailController : Controller
     {
-        private string url = "http://localhost:5101/api/OrderDetails/";
-        HttpClient client = new HttpClient();
+        private readonly string url = "http://localhost:5101/api/OrderDetails/";
+        private readonly HttpClient client = new HttpClient();
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrderDetailDTO>>> Index()
+        public async Task<IActionResult> Index()
         {
-            /*var UserId = HttpContext.Session.GetString("UserId");*/
-            var UserId = "Tester";
-            IEnumerable<OrderDetailDTO> TestDTO = new List<OrderDetailDTO>()
+            var testDTO = new List<OrderDetailDTO>()
             {
                 new OrderDetailDTO
                 {
@@ -60,28 +63,52 @@ namespace Edunext_MVC.Controllers
                     ProductImage = "https://example.com/product-c.jpg"
                 }
             };
+            var userId = HttpContext.Session.GetInt32("UserId");
+            var userName = HttpContext.Session.GetString("UserName");
 
-            if (!string.IsNullOrEmpty(UserId))
+            if (!string.IsNullOrEmpty(userName))
             {
-                var model = await client.GetAsync(url+UserId);
-                if (model.IsSuccessStatusCode)
+                var orderDetails = await GetOrderDetailsAsync((int)userId);
+
+                ViewBag.User = userName;
+                if (orderDetails == null)
                 {
-                    var result = model.Content.ReadAsStringAsync().Result;
-                    var orderDetails = JsonConvert.DeserializeObject<List<OrderDetailDTO>>(result);
-                    return View(orderDetails);
+                    return View(testDTO);
                 }
                 else
                 {
-                    ViewBag.User = UserId;
-                    return View(TestDTO);
-                   /* return RedirectToAction("Index", "Home");*/
+                    return View(orderDetails);
                 }
             }
             else
             {
-                return RedirectToAction("Login", "User");
+                ViewBag.User = "Guest";
+                return View(testDTO);
             }
-            
+        }
+
+        private async Task<IEnumerable<OrderDetailDTO>> GetOrderDetailsAsync(int userId)
+        {
+            var model = await client.GetAsync(url + userId);
+            if (!model.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var result = await model.Content.ReadAsStringAsync();
+            var orderDetails = JsonConvert.DeserializeObject<List<OrderDetailDTO>>(result);
+            return orderDetails;
+        }
+        public async Task<IActionResult> HtmlToPdfConverter()
+        {
+            string currentUrl = Request.GetEncodedUrl();
+            SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
+            SelectPdf.PdfDocument doc = converter.ConvertUrl(currentUrl);
+            /*doc.Save("test.pdf");
+            doc.Close();
+            return RedirectToAction("Index");*/
+            byte[] pdfData = await converter.ConvertAsync(currentUrl);
+            return File(pdfData, "application/pdf", "test.pdf");
         }
     }
 }
