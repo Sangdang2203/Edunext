@@ -1,9 +1,11 @@
 ﻿using Edunext_Model.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace Edunext_MVC.Controllers
 {
+    [Authorize]
     public class CategoryController : Controller
     {
         private readonly string cateUrl = "http://localhost:5101/api/Categories/";

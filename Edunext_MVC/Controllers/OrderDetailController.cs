@@ -1,9 +1,11 @@
 ﻿using Edunext_Model.DTOs.Cart;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace Edunext_MVC.Controllers
 {
+    [Authorize]
     public class OrderDetailController : Controller
     {
         private string url = "http://localhost:5101/api/OrderDetails/";

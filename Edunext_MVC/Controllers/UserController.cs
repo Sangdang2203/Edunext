@@ -1,18 +1,22 @@
 ﻿using Edunext_API.Helpers;
 using Edunext_API.Models;
 using Edunext_Model.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Edunext_MVC.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private string url = "http://localhost:5101/api/Users/";
 
         private HttpClient _httpClient = new HttpClient();
-
         private readonly DatabaseContext _context;
 
         public UserController(DatabaseContext context)
@@ -113,28 +117,40 @@ namespace Edunext_MVC.Controllers
                 return View();
             }
         }
-
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Login()
         {
+            // if (HttpContext.Session.GetString("UserName") != null)
+            // {
+            //     return RedirectToAction("Index", "User");
+            // }
             return View();
         }
-
+        [AllowAnonymous]
         [HttpPost]
-        public IActionResult Login(User user)
+        public async Task<IActionResult> Login(User user)
         {
             try
             {
-                var response = _httpClient.PostAsJsonAsync(url + "login", user).Result;
+                var response = await _httpClient.PostAsJsonAsync(url + "login", user);
                 if (response.IsSuccessStatusCode)
                 {
-                    var data = response.Content.ReadAsStringAsync().Result;
+                    var data = await response.Content.ReadAsStringAsync();
                     var apiResponse = JsonConvert.DeserializeObject<ApiResponse<User>>(data);
                     var dbUser = _context.Users.FirstOrDefault(u => u.Email == user.Email);
                     if (dbUser != null)
                     {
                         // Replace the username in the response with the username from the database
                         HttpContext.Session.SetString("UserName", dbUser.Username);
+
+                        // Create an identity and sign in the user
+                        var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, dbUser.Username)
+                };
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
                     }
                     return RedirectToAction("Index", "User");
                 }
@@ -153,6 +169,7 @@ namespace Edunext_MVC.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             TempData["Message"] = "Logout successfully";
             return RedirectToAction("Login", "User");
         }

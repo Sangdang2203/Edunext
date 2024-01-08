@@ -1,10 +1,12 @@
 ﻿
 using Edunext_Model.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace Edunext_MVC.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly string productUrl = "";

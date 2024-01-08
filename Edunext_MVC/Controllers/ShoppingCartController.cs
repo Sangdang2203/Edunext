@@ -3,9 +3,11 @@ using Newtonsoft.Json;
 using Edunext_Model.DTOs.Cart;
 using Microsoft.Extensions.Options;
 using Edunext_MVC.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Edunext_MVC.Controllers
 {
+    [Authorize]
     public class ShoppingCartController : Controller
     {
         private readonly string url;

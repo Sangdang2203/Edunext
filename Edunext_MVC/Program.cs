@@ -1,5 +1,6 @@
 using Edunext_API.Models;
 using Edunext_MVC.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 namespace Edunext_MVC
@@ -18,14 +19,21 @@ namespace Edunext_MVC
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("connectDB"));
             });
-
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(1);
+                options.IdleTimeout = TimeSpan.FromSeconds(30);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddCookie(options =>
+                {
+                    options.LoginPath = "/User/Login"; // Change this to the path of your login action
+                });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -36,6 +44,8 @@ namespace Edunext_MVC
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
