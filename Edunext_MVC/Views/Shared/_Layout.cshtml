@@ -78,25 +78,21 @@
                          <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="OrderDetail" asp-action="Index">Order Details</a>
                         </li>
-                        @{
-                            var username = Context.Session.GetString("UserName");
-                        }
-                        <li class="nav-item">
-                            @if (!string.IsNullOrEmpty(username))
-                            {
-                                <span>Welcome, @username</span>
-                            }
-                        </li>
-                        <li class="nav-item">
-                            @if (!string.IsNullOrEmpty(username))
-                            {
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
-                            }
-                            else
-                            {
+                            </li>
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">Welcome, @User.Identity.Name!</span>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Login</a>
-                            }
-                        </li>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
