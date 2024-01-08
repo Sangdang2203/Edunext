@@ -30,20 +30,21 @@ namespace Edunext_API
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IShoppingCartUnitOfWork, ShoppingCartUnitOfWork>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             builder.Services.AddScoped<OrderDetailRepository>();
 
             // Service
             builder.Services.AddScoped<OrderService>();
             builder.Services.AddScoped<ShoppingCartService>();
-
+            builder.Services.AddScoped<UserServices>();
             builder.Services.AddScoped<OrderDetailService>();
             
             builder.Services.AddDistributedMemoryCache();
 
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.IdleTimeout = TimeSpan.FromSeconds(30);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });

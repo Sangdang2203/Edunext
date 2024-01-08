@@ -1,0 +1,59 @@
+﻿@using Edunext_Model.Models;
+@model IEnumerable<Category>;
+
+<div class="d-flex justify-content-between align-items-center my-4">
+    <h2>Category Management</h2>
+    <a asp-action="Create" class="btn btn-light">+ Add New</a>
+</div>
+
+<form class="d-flex">
+    <input type="hidden" name="sort" value="@ViewBag.Sort" />
+    <input name="search" class="form-control w-25" placeholder="Enter your search..." value="@ViewBag.Search" />
+    <button class="btn btn-outline-success ms-2">Search</button>
+</form>
+<br />
+
+@if (TempData["success"] != null)
+{
+    <div class="alert alert-success my-2">
+        @TempData["success"]
+    </div>
+}
+
+@if (TempData["error"] != null)
+{
+    <div class="alert alert-danger my-2">
+        @TempData["error"]
+    </div>
+}
+
+<table class="table table-hover table-striped w-50 mx-auto">
+    <thead>
+        <tr>
+            <th scope="col">Categoty Name</th>
+
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-uppercase">@item.Name</td>
+                  
+                    <td>
+                        <a class="text-success me-2" asp-action="Edit" asp-route-id="@item.Id">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+    @if (Model?.Count() == 0)
+    {
+        <tr class="alert alert-danger text-center"><td colspan="8">No data !!!</td></tr>
+    }
+</table>

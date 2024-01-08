@@ -35,7 +35,7 @@ namespace Edunext_Model.Models
         public required string Description { get; set; }
 
         public int CategoryId { get; set; }
-        public Category? Categories { get; set; }
+        public Category? Category { get; set; }
         [JsonIgnore]
         public ICollection<OrderDetail>? OrderDetails { get; set; }
 

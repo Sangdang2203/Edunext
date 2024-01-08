@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Edunext_Model.Models
 {
@@ -15,6 +16,7 @@ namespace Edunext_Model.Models
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+        [JsonIgnore]
         public ICollection<Order>? Orders { get; set; }
     }
 }

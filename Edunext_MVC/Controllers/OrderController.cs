@@ -1,5 +1,6 @@
 ﻿using Edunext_Model.Models;
 using Edunext_MVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -8,6 +9,7 @@ using X.PagedList;
 namespace Edunext_MVC.Controllers
 {
     using Orders = IEnumerable<Order>;
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly string url;
@@ -18,7 +20,7 @@ namespace Edunext_MVC.Controllers
             url = client.Value.Url + "/Orders";
             httpClient = new();
         }
-
+        [HttpGet]
         public IActionResult Index(int userid_search, string collumn = "", string sort_type = "", int page_number = 1)
         {
             var res = httpClient.GetAsync(url).Result;
