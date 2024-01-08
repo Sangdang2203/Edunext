@@ -1,24 +1,25 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EduNet</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-<<<<<<< HEAD
+
     <link rel="stylesheet" href="~/EduNet.styles.css" asp-append-version="true" />
-=======
->>>>>>> 27a8aaefc0ad987a2696f292ef1f594d359aa473
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EduNet</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -27,30 +28,71 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Categories</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Category"
+                               asp-action="Index">Categories</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Products</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="Product" asp-action="Index">Product Management</a></li>
-                                <li><a class="dropdown-item" asp-controller="Product" asp-action="Create">Add New Product</a></li>
-<<<<<<< HEAD
-=======
-                                <li><a class="dropdown-item" asp-controller="ShoppingCart" asp-action="Index">Cart</a></li>
->>>>>>> 27a8aaefc0ad987a2696f292ef1f594d359aa473
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index">
+                                        Product
+                                        Management
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Create">
+                                        Add New
+                                        Product
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="Index">Cart</a>
+                                </li>
+
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Users</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="User" asp-action="Index">User Management</a></li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="User" asp-action="Index">
+                                        User
+                                        Management
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="Index">Orders</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Order"
+                               asp-action="Index">Orders</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="Order" asp-action="Index">Order Management</a></li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Order" asp-action="Index">
+                                        Order
+                                        Management
+                                    </a>
+                                </li>
                             </ul>
+                        </li>
+                        @{
+                            var username = Context.Session.GetString("UserName");
+                        }
+                        <li class="nav-item">
+                            @if (!string.IsNullOrEmpty(username))
+                            {
+                                <span>Welcome, @username</span>
+                            }
+                        </li>
+                        <li class="nav-item">
+                            @if (!string.IsNullOrEmpty(username))
+                            {
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Login</a>
+                            }
                         </li>
                     </ul>
                 </div>
@@ -75,4 +117,5 @@
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

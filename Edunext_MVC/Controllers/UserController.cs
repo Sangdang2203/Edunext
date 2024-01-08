@@ -1,4 +1,6 @@
-﻿using Edunext_Model.Models;
+﻿using Edunext_API.Helpers;
+using Edunext_API.Models;
+using Edunext_Model.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
@@ -11,6 +13,13 @@ namespace Edunext_MVC.Controllers
 
         private HttpClient _httpClient = new HttpClient();
 
+        private readonly DatabaseContext _context;
+
+        public UserController(DatabaseContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public IActionResult Index()
         {
@@ -18,8 +27,8 @@ namespace Edunext_MVC.Controllers
             if (res.IsSuccessStatusCode)
             {
                 var data = res.Content.ReadAsStringAsync().Result;
-                var users = JsonConvert.DeserializeObject<User>(data);
-                return View(users);
+                var apiResponse = JsonConvert.DeserializeObject<ApiResponse<List<User>>>(data);
+                return View(apiResponse.Value);
             }
             return View(null);
         }
@@ -41,12 +50,14 @@ namespace Edunext_MVC.Controllers
                 var res = _httpClient.PostAsync(url, data).Result;
                 if (res.IsSuccessStatusCode)
                 {
+                    TempData["Message"] = "Create successfully";
                     return RedirectToAction("Index");
                 }
                 return View();
             }
             catch (Exception e)
             {
+                TempData["Error"] = "Error while create";
                 return View();
             }
         }
@@ -58,8 +69,8 @@ namespace Edunext_MVC.Controllers
             if (res.IsSuccessStatusCode)
             {
                 var data = res.Content.ReadAsStringAsync().Result;
-                var user = JsonConvert.DeserializeObject<User>(data);
-                return View(user);
+                var apiResponse = JsonConvert.DeserializeObject<ApiResponse<User>>(data);
+                return View(apiResponse.Value);
             }
             return View(null);
         }
@@ -104,13 +115,13 @@ namespace Edunext_MVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login ()
+        public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult Login (User user)
+        public IActionResult Login(User user)
         {
             try
             {
@@ -118,15 +129,16 @@ namespace Edunext_MVC.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var data = response.Content.ReadAsStringAsync().Result;
-                    var userLogin = JsonConvert.DeserializeObject<User>(data);
-                    if (userLogin != null)
+                    var apiResponse = JsonConvert.DeserializeObject<ApiResponse<User>>(data);
+                    var dbUser = _context.Users.FirstOrDefault(u => u.Email == user.Email);
+                    if (dbUser != null)
                     {
-                        HttpContext.Session.SetString("user", JsonConvert.SerializeObject(userLogin));
-                        return RedirectToAction("Index", "User");
+                        // Replace the username in the response with the username from the database
+                        HttpContext.Session.SetString("UserName", dbUser.Username);
                     }
-                    ModelState.AddModelError("", "Username or password is incorrect!");
-                    return View();
+                    return RedirectToAction("Index", "User");
                 }
+                TempData["Error"] = "Username or password is incorrect!";
                 return View();
             }
             catch (Exception e)
@@ -135,10 +147,13 @@ namespace Edunext_MVC.Controllers
                 return View();
             }
         }
-        [HttpPost]
+
+
+        [HttpGet]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
+            TempData["Message"] = "Logout successfully";
             return RedirectToAction("Login", "User");
         }
     }

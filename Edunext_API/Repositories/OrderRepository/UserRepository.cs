@@ -24,7 +24,8 @@ namespace Edunext_API.Repositories.OrderRepository
         }
         public async Task InsertUser(User user)
         {
-            await databaseContext.Users.AddAsync(user);
+            var newUser = await databaseContext.Users.AddAsync(user);
+            await databaseContext.SaveChangesAsync();
         }
         public async void DeleteUser(int id)
         {
@@ -34,6 +35,7 @@ namespace Edunext_API.Repositories.OrderRepository
         public void UpdateUser(User user)
         {
             databaseContext.Entry(user).State = EntityState.Modified;
+            databaseContext.SaveChanges();
         }
     }
 }

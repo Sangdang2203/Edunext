@@ -1,4 +1,6 @@
+using Edunext_API.Models;
 using Edunext_MVC.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Edunext_MVC
 {
@@ -12,6 +14,17 @@ namespace Edunext_MVC
             builder.Services.AddControllersWithViews();
 
             builder.Services.Configure<Client>(builder.Configuration.GetSection("Client"));
+            builder.Services.AddDbContext<DatabaseContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("connectDB"));
+            });
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -25,6 +38,8 @@ namespace Edunext_MVC
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.MapControllerRoute(
                 name: "default",

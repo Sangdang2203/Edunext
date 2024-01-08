@@ -1,4 +1,5 @@
 ﻿using Edunext_API.Helpers;
+using Edunext_API.Models;
 using Edunext_API.Services;
 using Edunext_Model.Models;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +13,12 @@ namespace Edunext_API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserServices userServices;
-        public UsersController(UserServices userServices) { this.userServices = userServices; }
+        private readonly DatabaseContext databaseContext;
+        public UsersController(UserServices userServices, DatabaseContext databaseContext)
+        {
+            this.userServices = userServices;
+            this.databaseContext = databaseContext;
+        }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<IEnumerable<User>>>> GetUsers()
@@ -99,15 +105,10 @@ namespace Edunext_API.Controllers
             ApiResponse<User> res = new(user, "Login successfully");
             try
             {
-                User? userLogin = await userServices.GetUserById(user.Id);
+                var userLogin = await databaseContext.Users.FirstOrDefaultAsync(u => u.Email == user.Email && u.Password == user.Password);
                 if (userLogin == null)
                 {
-                    res.Message = "User not found!";
-                    return NotFound(res);
-                }
-                if (userLogin.Password != user.Password)
-                {
-                    res.Message = "Password is not correct!";
+                    res.Message = "Username or password is incorrect!";
                     return BadRequest(res);
                 }
                 return Ok(res);
@@ -118,5 +119,6 @@ namespace Edunext_API.Controllers
                 return BadRequest(res);
             }
         }
+        
     }
 }
