@@ -2,8 +2,8 @@
 {
     public class UploadFiles
     {
-        static readonly string rootUrl = "";
-        static readonly string baseFolder = "uploads";
+        static readonly string rootUrl = "http://localhost:5101/";
+        static readonly string baseFolder = "Uploads";
         public static string SaveFile(string folder, IFormFile image)
         {
             string fileName = Guid.NewGuid().ToString() + "_" + image.FileName;
@@ -22,10 +22,13 @@
 
         public static void DeleteFile(string fileName)
         {
-            string filePath = fileName[rootUrl.Length..];
-            if (File.Exists(filePath))
+            string filePath = fileName.Replace(rootUrl, string.Empty);
+            if (!string.IsNullOrEmpty(filePath))
             {
-                File.Delete(filePath);
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
             }
         }
     }

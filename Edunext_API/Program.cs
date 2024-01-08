@@ -5,6 +5,7 @@ using Edunext_API.Repositories.OrderRepository;
 using Edunext_API.Repositories.UnitOfWork;
 using Edunext_API.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 namespace Edunext_API
 {
@@ -57,6 +58,13 @@ namespace Edunext_API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
+                RequestPath = "/Uploads"
+            });
 
             app.UseAuthorization();
 
