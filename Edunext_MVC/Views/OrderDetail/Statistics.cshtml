@@ -5,13 +5,12 @@
 }
 
 <h1 class="text-black text-center">Statistics</h1>
-<h3 class="text-black text-center">Hello! @(ViewBag.User ?? null)</h3>
 <div class="row mb-4">
     <div class="col col-6">
         @Html.Partial("_TopSeller", Model)
     </div>
     <div class="col col-6">
-        @Html.Partial("_ChartTotalMonth")
+        <canvas id="productChartBarTotalQuantityByMonthCanvas"></canvas>
     </div>
 </div>
 <table id="orderDetailsTable" class="table align-middle mb-0 bg-white">
@@ -78,5 +77,51 @@
                 "autoWidth": false
             });
         });
+    </script>
+    <script>
+        function drawChart(labels, totalQuantity) {
+            var ctx = document.getElementById('productChartBarTotalQuantityByMonthCanvas').getContext('2d');
+            var randomColors = labels.map(() => '#' + (Math.random().toString(16) + '0000000').slice(2, 8));
+
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Quantity',
+                        data: totalQuantity,
+                        backgroundColor: randomColors,
+                        borderColor: randomColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOMContentLoaded');
+            fetchAndProcessData();
+        });
+
+        function fetchAndProcessData() {
+            fetch("ProductChartTotalQuantityByMonth")
+                .then(res => res.json())
+                .then(data => {
+                    const labels = data.labels;
+                    const totalQuantity = data.totalQuantity;
+
+                    drawChart(labels, totalQuantity);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
     </script>
 }

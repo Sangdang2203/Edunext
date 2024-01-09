@@ -1,5 +1,4 @@
 ﻿using Edunext_Model.DTOs.Cart;
-using Edunext_Model.DTOs.Chart;
 using Edunext_Model.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -220,22 +219,36 @@ namespace Edunext_MVC.Controllers
         }
         public async Task<IActionResult> ProductChartTotalQuantityByMonth()
         {
-            string jsonString = "";
-            var model = await client.GetAsync(url + "ProductChartTotalQuantityByMonth");
-            var result = await model.Content.ReadAsStringAsync();
-            var chartData = JsonConvert.DeserializeObject<ChartByMonthDTO>(jsonString);
-            //test
-            List<ChartByMonthDTO> chartData2 = new List<ChartByMonthDTO>();
+            var labels = new string[] { "January", "February", "March", "April", "May" };
+            var totalQuantity = new int[] { 10, 20, 15, 30, 25 };
 
-            Random random = new Random();
-            for (int month = 1; month <= 12; month++)
+            var getModel = await client.GetAsync(url + "ProductChartTotalQuantityByMonth");
+           
+            if (getModel.IsSuccessStatusCode)
             {
-                ChartByMonthDTO item = new ChartByMonthDTO();
-                item.labels = $"{DateTime.Now.Year}-{month:00}";
-                item.totalQuantity = random.Next(100, 1000);
-                chartData2.Add(item);
+                var result = await getModel.Content.ReadAsStringAsync();
+
+                try
+                {
+                    var jsonData = JsonConvert.DeserializeObject<dynamic>(result);
+                    var jsonDataLabels = jsonData.labels;
+                    var jsonDataTotalQuantity = jsonData.totalQuantity;
+
+                    if (jsonDataLabels.Count == 0 || jsonDataTotalQuantity.Count == 0)
+                    {
+                        return Json(new { labels, totalQuantity });
+                    }
+                    else
+                    {
+                        return Json(result);
+                    }
+                }
+                catch (JsonReaderException)
+                {
+                    return Json(new { labels, totalQuantity });
+                }
             }
-            return Json(chartData2);
+            return Json(new { labels, totalQuantity });
         }
     }
 }

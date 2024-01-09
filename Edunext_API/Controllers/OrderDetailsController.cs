@@ -2,7 +2,6 @@
 using Edunext_API.Models;
 using Edunext_API.Services;
 using Edunext_Model.DTOs.Cart;
-using Edunext_Model.DTOs.Chart;
 using Edunext_Model.Mapper;
 using Edunext_Model.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -152,29 +151,27 @@ namespace Edunext_API.Controllers
                 return StatusCode(500, "An error occurred while fetching order details.");
             }
         }
-        // API to chart the revenue by month
-        [HttpGet("GetRevenueByMonth")]
-        public async Task<ActionResult<List<ChartByMonthDTO>>> ProductChartTotalQuantityByMonth()
-        {
-            var products = _context.OrderDetails
-                .GroupBy(p => new { p.CreatedDate.Year, p.CreatedDate.Month })
-                 .Select(g => new
-                 {
-                     Year = g.Key.Year,
-                     Month = g.Key.Month,
-                     TotalQuantity = g.Sum(p => p.Quantity)
-                 }).ToList();
 
-            var chartData = new List<ChartByMonthDTO> {};
-            products.ForEach(p =>
-            {
-                chartData.Add(new ChartByMonthDTO
+        [HttpGet("ProductChartTotalQuantityByMonth")]
+        public IActionResult ProductChartTotalQuantityByMonth()
+        {
+            var chartData = _context.OrderDetails
+                .GroupBy(o => new { Year = o.CreatedDate.Year, Month = o.CreatedDate.Month })
+                .Select(g => new
                 {
-                    labels = $"{p.Year}-{p.Month}",
-                    totalQuantity = p.TotalQuantity
-                });
-            });
-            return chartData;
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    TotalQuantity = g.Sum(x => x.Quantity)
+                })
+                .OrderBy(x => x.Year)
+                .ThenBy(x => x.Month)
+                .ToList();
+
+
+            var labels = chartData.Select(cd => $"{cd.Month}/{cd.Year}").ToList();
+            var totalQuantity = chartData.Select(cd => cd.TotalQuantity).ToList();
+
+            return Ok(new { labels, totalQuantity });
         }
     }
 }
