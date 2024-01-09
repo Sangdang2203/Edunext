@@ -1,6 +1,6 @@
 ﻿
-@using Edunext_Model.Models;
-@model IEnumerable<Product>;
+@using Edunext_Model.DTOs.Product;
+@model IEnumerable<ProductGet>;
 
 <div class="d-flex justify-content-between align-items-center my-4">
     <h2>Product Management</h2>
@@ -67,8 +67,6 @@
                 </a>
             </th>
 
-            <th scope="col">Description</th>
-
             <th scope="col">Actions</th>
         </tr>
     </thead>
@@ -80,30 +78,30 @@
                 <tr>
                     <td>@item.Code</td>
                     <td class="text-uppercase">@item.Name</td>
+                    <td>
+                        <img src="@item.ImageUrl" alt="@item.Name" width="100" class="img-thumbnail" />
+                    </td>
                     <td>@item.Category.Name</td>
-
-                    <td>
-                        <img src="@item.Image" alt="@item.Name" width="100" class="img-thumbnail" />
-                    </td>
-
                     <td>$ @item.Price</td>
-                    <td>@(item.Quantity == 0 ? "Out of stock" : item.Quantity)
-                    </td>
-                    <td>@item.Description</td>
+                    <td>@(item.Quantity == 0 ? "Out of stock" : item.Quantity)</td>
 
                     <td>
-                        <a asp-action="Remove" asp-route-id="@item.Id">
-                            <i class="bi bi-trash"></i>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger text-decoration-none" 
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"
+                            onclick="return confirm('Are your sure to delete this product ?')">
+                            <i class="bi bi-trash-fill"></i>
                         </a>
 
-                        <a
+                        <a class="mx-2 text-dark text-decoration-none"
                            data-bs-toggle="modal"
-                           data-bs-target="@("#Modal" + item.Id)">
-                            <i class="bi bi-eye"></i>
+                           data-bs-target="@("#Modal" + item.Id)"
+                           data-bs-placement="top" title="See details">
+                            <i class="bi bi-eye-fill"></i>
                         </a>
                         @(await Html.PartialAsync("Details", item))
 
-                        <a class="btn btn-outline-success" asp-action="Edit" asp-route-id="@item.Id">
+                        <a class="text-success text-decoration-none" asp-action="Edit" asp-route-id="@item.Id"
+                           data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                             <i class="bi bi-pencil-square"></i>
                         </a>
                     </td>

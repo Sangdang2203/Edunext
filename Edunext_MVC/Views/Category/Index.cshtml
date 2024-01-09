@@ -44,7 +44,8 @@
                     <td class="text-uppercase">@item.Name</td>
                   
                     <td>
-                        <a class="text-success me-2" asp-action="Edit" asp-route-id="@item.Id">
+                        <a class="text-success text-decoration-none" asp-action="Edit" asp-route-id="@item.Id"
+                           data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                             <i class="bi bi-pencil-square"></i>
                         </a>
                     </td>

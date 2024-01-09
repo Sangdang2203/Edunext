@@ -231,7 +231,7 @@ namespace Edunext_MVC.Controllers
             for (int month = 1; month <= 12; month++)
             {
                 ChartByMonthDTO item = new ChartByMonthDTO();
-                item.labels = $"{DateTime.Now.Year}-{month:00}"; 
+                item.labels = $"{DateTime.Now.Year}-{month:00}";
                 item.totalQuantity = random.Next(100, 1000);
                 chartData2.Add(item);
             }

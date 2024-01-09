@@ -97,7 +97,7 @@ namespace Edunext_API.Controllers
                         od.LineTotal = od.UnitPrice * od.Quantity * (1 - od.Discount/100);
                         od.Status = orderDetails.Find(o => o.Id == od.Id).Order.Status;
                         od.ProductName = orderDetails.Find(o => o.Id == od.Id).Product.Name;
-                        od.ProductImage = orderDetails.Find(o => o.Id == od.Id).Product.Image;
+                        od.ProductImage = orderDetails.Find(o => o.Id == od.Id).Product.ImageUrl;
                     });
 
                     return Ok(orderDetailDTOs);
@@ -137,7 +137,7 @@ namespace Edunext_API.Controllers
                     orderDetailDTOs.ForEach(od =>
                     {
                         od.ProductName = orderDetails.Find(o => o.ProductId == od.ProductID).Product.Name;
-                        od.ProductImage = orderDetails.Find(o => o.ProductId == od.ProductID).Product.Image;
+                        od.ProductImage = orderDetails.Find(o => o.ProductId == od.ProductID).Product.ImageUrl;
                     });
 
                     return Ok(orderDetailDTOs);
