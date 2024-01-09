@@ -2,6 +2,7 @@
 using Edunext_API.Models;
 using Edunext_API.Services;
 using Edunext_Model.DTOs.Cart;
+using Edunext_Model.DTOs.Chart;
 using Edunext_Model.Mapper;
 using Edunext_Model.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -111,6 +112,69 @@ namespace Edunext_API.Controllers
                 return StatusCode(500, "An error occurred while fetching order details.");
             }
         }
+        [HttpGet("GetTop10SellingProducts")]
+        public async Task<ActionResult<List<OrderDetailDTO>>> GetTop10SellingProducts()
+        {
+            try
+            {
+                var orderDetails = await _context.OrderDetails
+                    .Include(od => od.Product)
+                    .GroupBy(od => od.ProductID)
+                    .Select(od => new
+                    {
+                        ProductId = od.Key,
+                        Quantity = od.Sum(o => o.Quantity),
+                        Product = od.FirstOrDefault().Product 
+                    })
+                    .OrderByDescending(od => od.Quantity)
+                    .Take(10)
+                    .ToListAsync();
 
+                if (orderDetails != null)
+                {
+                    var orderDetailDTOs = Mapping.Mapper.Map<List<OrderDetailDTO>>(orderDetails);
+
+                    orderDetailDTOs.ForEach(od =>
+                    {
+                        od.ProductName = orderDetails.Find(o => o.ProductId == od.ProductID).Product.Name;
+                        od.ProductImage = orderDetails.Find(o => o.ProductId == od.ProductID).Product.Image;
+                    });
+
+                    return Ok(orderDetailDTOs);
+                }
+                else
+                {
+                    return NotFound("No order details found for the specified user.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while fetching order details.");
+            }
+        }
+        // API to chart the revenue by month
+        [HttpGet("GetRevenueByMonth")]
+        public async Task<ActionResult<List<ChartByMonthDTO>>> ProductChartTotalQuantityByMonth()
+        {
+            var products = _context.OrderDetails
+                .GroupBy(p => new { p.CreatedDate.Year, p.CreatedDate.Month })
+                 .Select(g => new
+                 {
+                     Year = g.Key.Year,
+                     Month = g.Key.Month,
+                     TotalQuantity = g.Sum(p => p.Quantity)
+                 }).ToList();
+
+            var chartData = new List<ChartByMonthDTO> {};
+            products.ForEach(p =>
+            {
+                chartData.Add(new ChartByMonthDTO
+                {
+                    labels = $"{p.Year}-{p.Month}",
+                    totalQuantity = p.TotalQuantity
+                });
+            });
+            return chartData;
+        }
     }
 }

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Edunext_Model.DTOs.Cart.OrderDetailDTO>
+<div class="bg-success">
+    <h2 class="text-black text-center">Top Seller</h2>
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="table-responsive bg-white">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Discount</th>
+                            <th scope="col">SubTotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <th scope="row" style="color: #666666;">@item.ProductName</th>
+                                <th scope="row" style="color: #666666;">@item.Quantity</th>
+                                <th scope="row" style="color: #666666;">@item.UnitPrice</th>
+                                <th scope="row" style="color: #666666;">@item.Discount</th>
+                                <th scope="row" style="color: #666666;">@item.LineTotal</th>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

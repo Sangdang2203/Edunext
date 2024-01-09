@@ -74,9 +74,21 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li
-                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="OrderDetail" asp-action="Index">Order Details</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">OrderDetail</a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="OrderDetail" asp-action="Index">
+                                        OrderDetail
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="OrderDetail" asp-action="Statistics">
+                                        Statistics
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
@@ -92,6 +104,7 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Login</a>
                             </li>
+
                         }
                     </ul>
                 </div>
@@ -112,6 +125,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    @*  @RenderSection("Scripts", required: false) *@
 
     @await RenderSectionAsync("Scripts", required: false)
